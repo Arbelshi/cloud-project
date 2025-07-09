@@ -30,6 +30,7 @@ const upload = multer({ storage });
 
 // Global Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(methodOverride((req, res) => {
   if (req.body && typeof req.body._method === 'string') {
     const method = req.body._method;
@@ -76,12 +77,12 @@ app.set('views', path.join(__dirname, 'views'));
 // Connect to MongoDB
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('✅ Connected to MongoDB');
+    console.log(' Connected to MongoDB');
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(` Server running on http://localhost:${PORT}`);
     });
   })
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch(err => console.error(' MongoDB connection error:', err));
 
 // require('dotenv').config();
 console.log('IMMAGA key:', process.env.IMAGGA_API_KEY ? 'OK' : 'MISSING');
@@ -92,10 +93,13 @@ const authRoutes    = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const foodRoutes    = require('./routes/foodRoutes');
 const indexRoutes = require('./routes/indexRoutes');
+const ollamaRoutes = require('./routes/ollamaRoutes');
 
 // כל הנתיבים דרך ה־Router
 app.use('/', authRoutes);
 app.use('/', patientRoutes);
 app.use('/', foodRoutes);
 app.use('/', indexRoutes);
+app.use('/', ollamaRoutes);
+
 

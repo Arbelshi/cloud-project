@@ -177,6 +177,13 @@
 
   <div class="container">
     <h1>Patients</h1>
+      <div style="margin-bottom:2em; text-align:center;">
+    <form id="ollama-form" style="display:inline-block; margin-bottom:1em;">
+      <input type="text" id="ollama-prompt" placeholder="Ask Ollama about food and medicine..." required style="padding:0.6em; width:260px; border-radius:5px; border:1px solid #bfc8da;">
+      <button type="submit" style="padding:0.6em 1.3em; background:#2d6cdf; color:#fff; border:none; border-radius:5px; font-weight:600;">Ask Ollama</button>
+    </form>
+    <div id="ollama-answer" style="margin-top:1em; color:#222; font-size:1.09em; min-height:2em;"></div>
+  </div>
     <a href="/patients/new" class="add-btn">+ Add New Patient</a>
     <ul class="patient-list">
       <% patients.forEach(patient => { %>
@@ -201,5 +208,24 @@
       <% }); %>
     </ul>
   </div>
+  <script>
+document.getElementById('ollama-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const prompt = document.getElementById('ollama-prompt').value;
+  const answerDiv = document.getElementById('ollama-answer');
+  answerDiv.innerText = 'Thinking...';
+  try {
+    const res = await fetch('/ask-ollama', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+    answerDiv.innerText = data.answer || data.error;
+  } catch (err) {
+    answerDiv.innerText = 'Error: ' + err.message;
+  }
+});
+</script>
 </body>
 </html>
