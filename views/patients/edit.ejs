@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Patient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f9fb;
+            margin: 0;
+            padding: 0;
+            color: #222;
+        }
+        nav {
+            background: #2d6cdf;
+            color: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 1rem;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        nav strong {
+            margin: 0 8px;
+        }
+        nav form {
+            margin: 0 0 0 auto;
+        }
+        nav button {
+            background: #fff;
+            color: #2d6cdf;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        nav button:hover {
+            background: #e3eaff;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 32px;
+            color: #2d6cdf;
+            letter-spacing: 1px;
+        }
+        form {
+            background: #fff;
+            max-width: 480px;
+            margin: 32px auto 0 auto;
+            padding: 32px 28px 24px 28px;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(44, 108, 223, 0.07);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        label {
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: block;
+            color: #2d6cdf;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #c6d4f5;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 6px;
+            background: #f5f8ff;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            border-color: #2d6cdf;
+            outline: none;
+            background: #fff;
+        }
+        input[type="checkbox"] {
+            accent-color: #2d6cdf;
+            margin-right: 6px;
+        }
+        #preg-breast-fields {
+            background: #f0f6ff;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border: 1px solid #e0eaff;
+        }
+        img {
+            display: block;
+            margin: 8px 0 0 0;
+            border-radius: 6px;
+            border: 1px solid #e0eaff;
+            box-shadow: 0 1px 4px rgba(44, 108, 223, 0.07);
+        }
+        small {
+            color: #888;
+            margin-left: 2px;
+        }
+        .error-list {
+            color: #d32f2f;
+            background: #fff3f3;
+            border: 1px solid #ffd6d6;
+            border-radius: 6px;
+            padding: 10px 18px;
+            margin-bottom: 0;
+            list-style: disc inside;
+        }
+        button[type="submit"] {
+            background: #2d6cdf;
+            color: #fff;
+            border: none;
+            padding: 10px 0;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #1c4fa1;
+        }
+        @media (max-width: 600px) {
+            form {
+                max-width: 98vw;
+                padding: 16px 4vw;
+            }
+            nav {
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <% if (currentUser.role === 'Doctor') { %>
+            <a href="/patients">← Back to list</a>
+        <% } else { %>
+            <a href="/patients/<%= patient._id %>">← My Profile</a>
+        <% } %>
+        | Logged in as <strong><%= currentUser.role %></strong>
+        <form action="/logout" method="POST" style="display:inline">
+            <button type="submit">Logout</button>
+        </form>
+    </nav>
+
+    <h1>Edit Profile</h1>
+
+    <% if (errors) { %>
+        <ul class="error-list">
+            <% Object.values(errors).forEach(e => { %>
+                <li><%= e.message %></li>
+            <% }) %>
+        </ul>
+    <% } %>
+
+    <form 
+        action="/patients/<%= patient._id %>?_method=PUT" 
+        method="POST" 
+        enctype="multipart/form-data"
+    >
+        <input 
+            type="hidden" 
+            name="currentImageUrl" 
+            value="<%= patient.imageUrl || '' %>"
+        >
+
+        <label for="firstName">First Name:</label>
+        <input 
+            type="text" 
+            id="firstName" 
+            name="firstName" 
+            required 
+            value="<%= patient.firstName || '' %>"
+        >
+
+        <label for="lastName">Last Name:</label>
+        <input 
+            type="text" 
+            id="lastName" 
+            name="lastName" 
+            required 
+            value="<%= patient.lastName || '' %>"
+        >
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="">Select</option>
+            <option value="Male"   <%= patient.gender==='Male'   ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= patient.gender==='Female' ? 'selected' : '' %>>Female</option>
+            <option value="Other"  <%= patient.gender==='Other'  ? 'selected' : '' %>>Other</option>
+        </select>
+
+        <div id="preg-breast-fields" style="display:none;">
+            <label for="isPregnant">
+                <input 
+                    type="checkbox" 
+                    id="isPregnant" 
+                    name="isPregnant" 
+                    <%= patient.isPregnant ? 'checked' : '' %>
+                > Pregnant
+            </label>
+            <label for="isBreastfeeding">
+                <input 
+                    type="checkbox" 
+                    id="isBreastfeeding" 
+                    name="isBreastfeeding" 
+                    <%= patient.isBreastfeeding ? 'checked' : '' %>
+                > Breastfeeding
+            </label>
+        </div>
+
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input
+            type="date"
+            id="dateOfBirth"
+            name="dateOfBirth"
+            required
+            max="<%= new Date().toISOString().slice(0,10) %>"
+            min="<%= (() => { 
+                const d = new Date(); 
+                d.setFullYear(d.getFullYear()-120); 
+                return d.toISOString().slice(0,10); 
+            })() %>"
+            value="<%= patient.dateOfBirth 
+                        ? new Date(patient.dateOfBirth).toISOString().slice(0,10) 
+                        : '' %>"
+        >
+
+        <label for="email">Email:</label>
+        <input 
+            type="email" 
+            id="email"
+            value="<%= patient.email %>" 
+            disabled
+        >
+
+        <label for="phone">Phone:</label>
+        <input
+            type="text"
+            id="phone"
+            name="phone"
+            required
+            pattern="[0-9]+"
+            title="Please enter digits only"
+            value="<%= patient.phone || '' %>"
+        >
+
+        <label for="image">Upload Photo:</label>
+        <input 
+            type="file" 
+            id="image" 
+            name="image" 
+            accept="image/*"
+        >
+        <% if (patient.imageUrl) { %>
+            <img 
+                src="<%= patient.imageUrl %>" 
+                alt="Current photo" 
+                width="100"
+            >
+        <% } %>
+
+        <label for="chronicConditions">Chronic Conditions:</label>
+        <input
+            type="text"
+            id="chronicConditions"
+            name="chronicConditions"
+            placeholder="e.g. Diabetes, Asthma"
+            value="<%= (patient.chronicConditions||[]).join(', ') %>"
+        >
+        <small>(comma-separated)</small>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <script>
+        const genderSelect = document.getElementById('gender');
+        const pregFields   = document.getElementById('preg-breast-fields');
+        function togglePreg() {
+            if (genderSelect.value === 'Female') {
+                pregFields.style.display = 'block';
+            } else {
+                pregFields.style.display = 'none';
+                pregFields.querySelectorAll('input[type="checkbox"]')
+                                 .forEach(cb => cb.checked = false);
+            }
+        }
+        genderSelect.addEventListener('change', togglePreg);
+        document.addEventListener('DOMContentLoaded', togglePreg);
+    </script>
+</body>
+</html>

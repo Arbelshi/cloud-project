@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Food History for <%= patientName %></title>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(120deg, #f0f2f5 0%, #e3e9f7 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 850px;
+      margin: 2.5rem auto;
+      padding: 2rem 2rem 2.5rem 2rem;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(60, 80, 180, 0.10), 0 1.5px 4px rgba(0,0,0,0.04);
+    }
+    a.back {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      text-decoration: none;
+      color: #2d6cdf;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    a.back:hover {
+      color: #174ea6;
+      text-decoration: underline;
+    }
+    h1 {
+      color: #222b45;
+      margin-bottom: 2rem;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .detection-card {
+      background: #f7faff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 2rem;
+      border-left: 5px solid #2d6cdf;
+      transition: box-shadow 0.2s;
+    }
+    .detection-card:hover {
+      box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
+    }
+    .detection-header {
+      font-size: 1rem;
+      color: #5a6b8a;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+    .item {
+      border: 1.5px solid #e0e7ef;
+      border-radius: 8px;
+      padding: 1rem 0.9rem 1.1rem 0.9rem;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(44, 62, 80, 0.03);
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .item:hover {
+      border-color: #2d6cdf;
+      box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+    }
+    .item h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2d6cdf;
+      letter-spacing: 0.1px;
+    }
+    .item em {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: #5a6b8a;
+      font-size: 0.97rem;
+      font-style: italic;
+    }
+    .nutrients {
+      font-size: 0.97rem;
+      color: #3a4664;
+      margin: 0.6rem 0 0.2rem 0;
+      padding-left: 1.1rem;
+      list-style: disc;
+    }
+    .nutrients li {
+      margin-bottom: 0.18rem;
+    }
+    .warnings {
+      font-size: 0.97rem;
+      color: #d32f2f;
+      margin-top: 0.7rem;
+      padding-left: 1.1rem;
+      list-style: circle;
+    }
+    .warnings li {
+      margin-bottom: 0.18rem;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem 0.5rem;
+      }
+      .detection-card {
+        padding: 1rem 0.5rem;
+      }
+      .items {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/food-detect" class="back">← New Detection</a>
+    <h1>Food History for <%= patientName %></h1>
+
+    <% if (!detections || detections.length === 0) { %>
+      <p style="color:#888; font-size:1.1rem; margin-top:2rem;">No past detections.</p>
+    <% } else { %>
+      <% detections.forEach(det => { %>
+        <div class="detection-card">
+          <div class="detection-header">
+            Scanned on <%= new Date(det.createdAt).toLocaleString('he-IL') %>
+          </div>
+          <div class="items">
+            <% det.items.forEach(item => { %>
+              <div class="item">
+                <h3>
+                  <%= item.name %>
+                  <span style="color:#888; font-weight:400; font-size:0.97rem;">
+                    — <%= (item.confidence * 100).toFixed(1) %>%
+                  </span>
+                </h3>
+                <% if (item.description) { %>
+                  <em><%= item.description %></em>
+                <% } %>
+                <% const nutrients = Object.entries(item.nutrients || {}).filter(([k,v]) => v != null); %>
+                <% if (nutrients.length) { %>
+                  <ul class="nutrients">
+                    <% nutrients.forEach(([nutr, val]) => { %>
+                      <li><strong><%= nutr %></strong>: <%= val %></li>
+                    <% }) %>
+                  </ul>
+                <% } %>
+                <% if (item.warnings && item.warnings.length) { %>
+                  <ul class="warnings">
+                    <% item.warnings.forEach(w => { %>
+                      <li>⚠️ <%= w %></li>
+                    <% }) %>
+                  </ul>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Patient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(120deg, #e3eaff 0%, #f7f9fb 100%);
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background: linear-gradient(90deg, #2d6cdf 60%, #4e8cff 100%);
+            color: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 2px 8px rgba(44, 76, 120, 0.07);
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 14px;
+            transition: text-decoration 0.2s;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        nav strong {
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        nav form {
+            margin: 0;
+            display: inline;
+        }
+        nav button {
+            background: #fff;
+            color: #2d6cdf;
+            border: none;
+            padding: 7px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1em;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 1px 4px rgba(44, 76, 120, 0.08);
+        }
+        nav button:hover {
+            background: #e3eaff;
+            color: #1c4fa1;
+        }
+        .container {
+            max-width: 500px;
+            background: #fff;
+            margin: 40px auto;
+            padding: 36px 32px 28px 32px;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(44, 76, 120, 0.10);
+        }
+        h1 {
+            text-align: center;
+            color: #2d6cdf;
+            margin-bottom: 28px;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 18px;
+            color: #2d3a4b;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="date"],
+        form input[type="file"],
+        form select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1.5px solid #c3d0e8;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            background: #f8fafc;
+            box-sizing: border-box;
+            transition: border 0.2s, background 0.2s;
+        }
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="date"]:focus,
+        form select:focus {
+            border-color: #2d6cdf;
+            outline: none;
+            background: #fff;
+        }
+        form input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: #2d6cdf;
+            transform: scale(1.15);
+        }
+        #preg-breast-fields {
+            background: #f3f7ff;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+            border: 1.5px solid #e0e7f5;
+            box-shadow: 0 1px 6px rgba(44, 76, 120, 0.04);
+        }
+        small {
+            color: #6c7a89;
+            font-size: 0.97em;
+        }
+        .error-list {
+            color: #d32f2f;
+            background: #fff3f3;
+            border: 1.5px solid #ffd6d6;
+            border-radius: 8px;
+            padding: 12px 22px;
+            margin-bottom: 22px;
+            list-style: disc inside;
+            font-size: 1.05em;
+        }
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(90deg, #2d6cdf 70%, #4e8cff 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 0;
+            border-radius: 8px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 14px;
+            box-shadow: 0 2px 8px rgba(44, 76, 120, 0.08);
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #1c4fa1;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 8px 16px 8px;
+                margin: 18px 4px;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <% if (currentUser && currentUser.role === 'Doctor') { %>
+            <a href="/patients">← Back to list</a>
+            | Logged in as <strong><%= currentUser.role %></strong>
+            <form action="/logout" method="POST" style="display:inline">
+                <button type="submit">Logout</button>
+            </form>
+        <% } %>
+    </nav>
+
+    <div class="container">
+        <h1>New Patient</h1>
+
+        <% if (errors) { %>
+            <ul class="error-list">
+                <% Object.values(errors).forEach(e => { %>
+                    <li><%= e.message %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <form action="/patients" method="POST" enctype="multipart/form-data">
+            <label for="firstName">First Name:
+                <input 
+                    type="text" 
+                    id="firstName"
+                    name="firstName" 
+                    required 
+                    value="<%= patient.firstName || '' %>"
+                >
+            </label>
+
+            <label for="lastName">Last Name:
+                <input 
+                    type="text" 
+                    id="lastName"
+                    name="lastName" 
+                    required 
+                    value="<%= patient.lastName || '' %>"
+                >
+            </label>
+
+            <label for="gender">Gender:
+                <select id="gender" name="gender" required>
+                    <option value="">Select</option>
+                    <option value="Male"   <%= patient.gender==='Male'   ? 'selected' : '' %>>Male</option>
+                    <option value="Female" <%= patient.gender==='Female' ? 'selected' : '' %>>Female</option>
+                    <option value="Other"  <%= patient.gender==='Other'  ? 'selected' : '' %>>Other</option>
+                </select>
+            </label>
+
+            <div id="preg-breast-fields" style="display:none; margin-top:10px;">
+                <label>
+                    <input type="checkbox" name="isPregnant" <%= patient.isPregnant ? 'checked' : '' %>>
+                    Pregnant
+                </label>
+                <label>
+                    <input type="checkbox" name="isBreastfeeding" <%= patient.isBreastfeeding ? 'checked' : '' %>>
+                    Breastfeeding
+                </label>
+            </div>
+
+            <label for="dateOfBirth">Date of Birth:
+                <input
+                    type="date"
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    required
+                    max="<%= new Date().toISOString().slice(0,10) %>"
+                    min="<%= (() => { const d = new Date(); d.setFullYear(d.getFullYear() - 120); return d.toISOString().slice(0,10); })() %>"
+                    value="<%= patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString().slice(0,10) : '' %>"
+                >
+            </label>
+
+            <label for="email">Email:
+                <input 
+                    type="email" 
+                    id="email"
+                    name="email" 
+                    required 
+                    value="<%= patient.email || '' %>"
+                >
+            </label>
+
+            <label for="phone">Phone:
+                <input 
+                    type="text" 
+                    id="phone"
+                    name="phone"
+                    pattern="[0-9]+"
+                    title="Please enter digits only"
+                    required
+                    value="<%= patient.phone || '' %>"
+                >
+            </label>
+
+            <label for="image">Upload Photo:
+                <input 
+                    type="file" 
+                    id="image" 
+                    name="image" 
+                    accept="image/*"
+                >
+            </label>
+
+            <label for="chronicConditions">Chronic Conditions:
+                <input
+                    type="text"
+                    id="chronicConditions"
+                    name="chronicConditions"
+                    placeholder="e.g. Diabetes, Asthma"
+                    value="<%= (patient.chronicConditions||[]).join(', ') %>"
+                >
+                <small>(comma-separated)</small>
+            </label>
+
+            <button type="submit">Create Patient</button>
+        </form>
+    </div>
+
+    <script>
+        const genderSelect = document.getElementById('gender');
+        const pregFields   = document.getElementById('preg-breast-fields');
+        function togglePregFields() {
+            if (genderSelect.value === 'Female') {
+                pregFields.style.display = 'block';
+            } else {
+                pregFields.style.display = 'none';
+                pregFields.querySelectorAll('input[type="checkbox"]')
+                    .forEach(ch => ch.checked = false);
+            }
+        }
+        genderSelect.addEventListener('change', togglePregFields);
+        document.addEventListener('DOMContentLoaded', togglePregFields);
+    </script>
+</body>
+</html>

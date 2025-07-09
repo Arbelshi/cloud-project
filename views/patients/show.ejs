@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Details</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #f7f9fb;
+            margin: 0;
+            padding: 0;
+            color: #222;
+        }
+        nav {
+            background: #1976d2;
+            color: #fff;
+            padding: 1em 2em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 1em;
+            font-weight: 500;
+        }
+        nav .user-info {
+            display: flex;
+            align-items: center;
+        }
+        nav .user-info strong {
+            margin: 0 0.5em;
+        }
+        nav button {
+            background: #fff;
+            color: #1976d2;
+            border: none;
+            padding: 0.4em 1em;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        nav button:hover {
+            background: #e3eaf5;
+        }
+        hr {
+            margin: 0;
+            border: none;
+            border-top: 1px solid #e3eaf5;
+        }
+        .container {
+            max-width: 600px;
+            background: #fff;
+            margin: 2em auto;
+            padding: 2em 2.5em;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2em;
+            color: #1976d2;
+            letter-spacing: 1px;
+        }
+        img {
+            display: block;
+            margin: 1em 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px rgba(25, 118, 210, 0.10);
+        }
+        p {
+            margin: 0.7em 0;
+            font-size: 1.08em;
+        }
+        strong {
+            color: #1976d2;
+        }
+        .actions {
+            margin-top: 1.5em;
+        }
+        .actions a {
+            display: inline-block;
+            margin-right: 0.5em;
+            padding: 0.4em 1em;
+            border: 1px solid #1976d2;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #1976d2;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .actions a:hover {
+            background: #1976d2;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <% if (currentUser.role === 'Doctor') { %>
+                <a href="/patients">← Back to list</a>
+            <% } else { %>
+                <a href="/patients/<%= currentUser.patient %>">← My Profile</a>
+            <% } %>
+        </div>
+        <div class="user-info">
+            Logged in as <strong><%= currentUser.role %></strong>
+            <form action="/logout" method="POST" style="margin-left:1em;">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </nav>
+    <hr>
+
+    <div class="container">
+        <h1><%= patient.firstName %> <%= patient.lastName %></h1>
+
+        <% if (patient.imageUrl) { %>
+            <img src="<%= patient.imageUrl %>" alt="Photo of <%= patient.firstName %>" width="150">
+        <% } %>
+
+        <p><strong>Age:</strong> <%= patient.age %></p>
+        <p><strong>Gender:</strong> <%= patient.gender %></p>
+        <p><strong>Date of Birth:</strong> <%= new Date(patient.dateOfBirth).toISOString().slice(0,10) %></p>
+        <p><strong>Email:</strong> <%= patient.email %></p>
+        <p><strong>Phone:</strong> <%= patient.phone %></p>
+        <p><strong>Pregnant:</strong> <%= patient.isPregnant ? 'Yes' : 'No' %></p>
+        <p><strong>Breastfeeding:</strong> <%= patient.isBreastfeeding ? 'Yes' : 'No' %></p>
+        <p>
+            <strong>Chronic Conditions:</strong>
+            <%= patient.chronicConditions.length 
+                ? patient.chronicConditions.join(', ') 
+                : 'None' %>
+        </p>
+
+        <div class="actions">
+            <% if (currentUser.role === 'Doctor' || currentUser.patient === patient._id.toString()) { %>
+                <a href="/patients/<%= patient._id %>/edit">✏️ Edit</a>
+                <a href="/food-detect">🍽️ Detect Food</a>
+                <a href="/patients/<%= patient._id %>/food-history">📋 Food History</a>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

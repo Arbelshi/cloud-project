@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Detected Food & Nutrition</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #e3ecfa 0%, #f7f9fb 100%);
+      margin: 0;
+      padding: 0;
+      color: #222;
+      min-height: 100vh;
+    }
+    nav {
+      background: linear-gradient(90deg, #2d6cdf 60%, #4f8cff 100%);
+      color: #fff;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(45,108,223,0.08);
+    }
+    nav a, nav span {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0 10px;
+      font-size: 1.05rem;
+    }
+    nav button {
+      background: #fff;
+      color: #2d6cdf;
+      border: none;
+      border-radius: 4px;
+      padding: 7px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(45,108,223,0.08);
+    }
+    nav button:hover {
+      background: #cce0ff;
+      color: #1a3c7c;
+    }
+    .container {
+      max-width: 750px;
+      margin: 48px auto 0 auto;
+      background: #fff;
+      padding: 36px 40px 32px 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(45,108,223,0.10);
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      color: #2d6cdf;
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(45,108,223,0.07);
+    }
+    ul.item-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul.item-list li {
+      padding: 22px 0 18px 0;
+      border-bottom: 1.5px solid #e0e6ed;
+      transition: background 0.15s;
+    }
+    ul.item-list li:last-child {
+      border-bottom: none;
+    }
+    .item-header {
+      font-size: 1.18rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #2d6cdf;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .item-header strong {
+      font-size: 1.15em;
+      letter-spacing: 0.5px;
+    }
+    .confidence-badge {
+      background: #e3ecfa;
+      color: #2d6cdf;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.98em;
+      margin-left: 8px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .item-description {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 10px;
+      margin-left: 2px;
+    }
+    ul.nutrients-list {
+      list-style: disc inside;
+      margin: 10px 0 0 0;
+      padding-left: 1.2em;
+      color: #1a3c7c;
+    }
+    ul.nutrients-list li {
+      margin-bottom: 5px;
+      font-size: 1.01em;
+    }
+    ul.warning-list {
+      list-style: none;
+      margin: 10px 0 0 0;
+      padding: 0;
+    }
+    ul.warning-list li {
+      color: #d32f2f;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 1.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    ul.warning-list li::before {
+      content: "⚠️";
+      margin-right: 4px;
+      font-size: 1.1em;
+    }
+    p.no-items {
+      text-align: center;
+      color: #666;
+      margin: 48px 0;
+      font-size: 1.15em;
+      letter-spacing: 0.2px;
+    }
+    .btn-back {
+      display: inline-block;
+      background: linear-gradient(90deg, #2d6cdf 70%, #4f8cff 100%);
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 1.07em;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(45,108,223,0.10);
+      border: none;
+      margin: 0 4px;
+    }
+    .btn-back:hover {
+      background: #1a4fa1;
+      box-shadow: 0 4px 16px rgba(45,108,223,0.13);
+    }
+    @media (max-width: 800px) {
+      .container {
+        max-width: 98vw;
+        padding: 18px 6vw 18px 6vw;
+      }
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 10vw;
+        gap: 8px;
+      }
+    }
+    @media (max-width: 500px) {
+      .container {
+        padding: 10px 2vw 10px 2vw;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      nav {
+        padding: 10px 2vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <span>Logged in as <strong><%= currentUser.role %></strong></span>
+    <div>
+      <a href="/food-detect" class="btn-back">← New Detection</a>
+      <form action="/logout" method="POST" style="display:inline">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Detected Food & Nutrition</h1>
+
+    <% if (items && items.length > 0) { %>
+      <ul class="item-list">
+        <% items.forEach(item => { %>
+          <li>
+            <div class="item-header">
+              <strong><%= item.name %></strong>
+              <span class="confidence-badge">
+                Confidence: <%= (item.confidence * 100).toFixed(1) %>%
+              </span>
+            </div>
+            <% if (item.description) { %>
+              <div class="item-description"><%= item.description %></div>
+            <% } %>
+            <% 
+              const nutrients = item.nutrients || {};
+              const keys = Object.keys(nutrients);
+              if (keys.length) { 
+            %>
+              <ul class="nutrients-list">
+                <% keys.forEach(nutrient => { %>
+                  <li><%= nutrient %>: <%= nutrients[nutrient] %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+            <% if (item.warnings && item.warnings.length) { %>
+              <ul class="warning-list">
+                <% item.warnings.forEach(w => { %>
+                  <li><%= w %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="no-items">No food items detected. Try a different image.</p>
+    <% } %>
+
+    <div style="text-align:center; margin-top:32px;">
+      <a href="/food-detect" class="btn-back">← Back to Upload</a>
+    </div>
+  </div>
+</body>
+</html>

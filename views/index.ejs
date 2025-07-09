@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homepage</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/dashboard.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #f7f9fb;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background: #2d6cdf;
+            color: #fff;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(45, 108, 223, 0.08);
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 8px;
+            font-weight: 500;
+            transition: color 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+        }
+        nav a:hover {
+            color: #cce0ff;
+            border-bottom: 2px solid #cce0ff;
+        }
+        nav strong {
+            margin: 0 8px;
+            font-weight: 700;
+        }
+        nav form {
+            display: inline;
+            margin: 0 8px;
+        }
+        nav button {
+            background: #fff;
+            color: #2d6cdf;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 4px rgba(45, 108, 223, 0.08);
+        }
+        nav button:hover {
+            background: #cce0ff;
+            color: #1a3c7c;
+        }
+        .btn-manage {
+            background: #fff;
+            color: #2d6cdf;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 12px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 4px rgba(45, 108, 223, 0.08);
+        }
+        .btn-manage:hover {
+            background: #cce0ff;
+            color: #1a3c7c;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e0e6ed;
+            margin: 0;
+        }
+        .dashboard {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .card {
+            flex: 1;
+            min-width: 200px;
+            background: #fff;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(45, 108, 223, 0.08);
+            text-align: center;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 24px rgba(45, 108, 223, 0.16);
+        }
+        .card h2 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #2d6cdf;
+            letter-spacing: 1px;
+        }
+        .card p {
+            margin: 0.5rem 0 0 0;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .section {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .section a {
+            display: inline-block;
+            margin: 0 0.5rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-primary {
+            background: #2d6cdf;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #1b4fa0;
+        }
+        .btn-secondary {
+            background: #e3eaf5;
+            color: #1976d2;
+        }
+        .btn-secondary:hover {
+            background: #cddffb;
+        }
+        @media (max-width: 700px) {
+            .cards {
+                flex-direction: column;
+            }
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+  <nav>
+    <div>
+      <span>Logged in as <strong><%= currentUser.role %></strong></span>
+      <a href="/" class="btn-manage">Dashboard</a>
+      <% if (currentUser.role === 'Patient') { %>
+        <a href="/patients/<%= currentUser.patient %>" class="btn-manage">My Profile</a>
+      <% } %>
+      <form action="/logout" method="POST" style="display:inline; margin-left:12px;">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+  </nav>
+  <hr>
+
+<% if (currentUser.role === 'Doctor') { %>
+    <div class="dashboard">
+        <div class="section quick-links">
+            <a href="/patients">All Patients</a>
+            <a href="/patients/new">New Patient</a>
+        </div>
+        <div class="cards">
+            <div class="card">
+                <h2><%= totalPatients %></h2>
+                <p>Total Patients</p>
+            </div>
+        </div>
+  <div class="section">
+    <h3>Recently Registered</h3>
+    <ul class="list">
+      <% recentPatients.forEach(p => { %>
+        <li>
+          <%= p.firstName %> <%= p.lastName %>
+          (<%= new Date(p.createdAt).toLocaleDateString() %>)
+        </li>
+      <% }) %>
+      <% if (recentPatients.length === 0) { %>
+        <li>No registrations yet.</li>
+      <% } %>
+    </ul>
+  </div>
+  <div class="section">
+    <h3>Upcoming Birthdays</h3>
+    <ul class="list">
+      <% upcomingBirthdays.forEach(p => { %>
+        <li class="birthday">
+          <%= p.firstName %> <%= p.lastName %> –
+          <%= new Date(p.dateOfBirth)
+               .toLocaleDateString('en-GB',{month:'short',day:'numeric'}) %>
+        </li>
+      <% }) %>
+      <% if (upcomingBirthdays.length === 0) { %>
+        <li>No birthdays this week.</li>
+      <% } %>
+    </ul>
+  </div>
+</div>
+<% } else { %>
+  <!-- Patient Dashboard -->
+  <div class="dashboard">
+    <h1>Welcome to your Patient Portal</h1>
+    <p class="subtitle">Here’s a quick overview of your recent scans:</p>
+
+    <div class="cards">
+      <div class="card">
+        <h2><%= totalScans %></h2>
+        <p>Total Scans</p>
+      </div>
+      <div class="card">
+        <h2><%= lastScan ? new Date(lastScan).toLocaleDateString() : '—' %></h2>
+        <p>Last Scan</p>
+      </div>
+      <div class="card">
+        <h2><%= totalWarnings %></h2>
+        <p>Total Warnings</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <a href="/food-detect" class="btn-primary">← New Detection</a>
+      <a href="/patients/<%= currentUser.patient %>/food-history" class="btn-secondary">📋 Food History</a>
+    </div>
+  </div>
+<% } %>
+</body>
+</html>

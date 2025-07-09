@@ -1,0 +1,45 @@
+{
+  "name": "cloud-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "service:condition": "node ./services/conditionAlertService.js",
+    "service:warn": "cross-env WARNING_PORT=5001 node warning-service/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run start\" \"npm run service:condition\" \"npm run service:warn\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/cognitiveservices-face": "^5.0.0",
+    "@azure/core-auth": "^1.9.0",
+    "@azure/identity": "^4.10.2",
+    "@azure/ms-rest-azure-js": "^2.1.0",
+    "@azure/openai": "^1.0.0-beta.4",
+    "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
+    "clarifai": "^2.9.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "form-data": "^4.0.3",
+    "http-proxy-middleware": "^3.0.5",
+    "method-override": "^3.0.0",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.1",
+    "multer": "^2.0.1",
+    "nodemailer": "^7.0.4",
+    "openai": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.4",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.10"
+  },
+  "description": ""
+}
